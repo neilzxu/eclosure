@@ -1,0 +1,19 @@
+# macOS system files
+.DS_Store
+**/.DS_Store
+._*
+**/._*
+*.pyc
+*.pyo
+*.pyd
+*.o
+*.so
+old/
+figures/
+build/
+.venv/
+uv.lock
+# add python package cache ignores
+.pytest_cache/
+__pycache__/
+/**/__pycache__/

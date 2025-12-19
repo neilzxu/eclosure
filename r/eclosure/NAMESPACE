@@ -1,0 +1,8 @@
+useDynLib(eClosure, .registration=TRUE)
+importFrom(Rcpp, sourceCpp)
+export(closedeBH)
+export(closedBY)
+export(BY_calibrate_evalues)
+export(ebh_discoveries)
+export(closed_ebh_from_evalues)
+export(closed_eBH_cal)

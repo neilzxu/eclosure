@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "pybind11>=2.11"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eclosure"
+version = "0.1.0"
+description = "Python bindings and utilities for closed e-BH and closed BY procedures"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "BNP multiple testing team" }
+]
+license = "GPL-3.0-only"
+dependencies = [
+  "numpy>=1.22",
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "matplotlib>=3.6",
+  "seaborn>=0.12",
+  "tqdm>=4.65"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pybind11>=2.11"]
+
+[tool.setuptools.packages.find]
+where = ["python/src"]
+
+[tool.setuptools.package-data]
+"eclosure" = ["data/evalues/*.csv", "data/pvalues/*.csv"]

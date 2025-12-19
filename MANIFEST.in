@@ -1,0 +1,4 @@
+graft cpp
+graft python/src/eclosure/data
+graft r/eclosure/inst/extdata
+global-exclude *.pyc __pycache__

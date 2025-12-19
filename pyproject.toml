@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64", "wheel", "pybind11>=2.11"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eclosure"
+version = "0.1.0"
+description = "Python bindings and utilities for e-Closure based multiple testing procedures"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Ziyu Xu, Aldo Solari, Lasse Fischer, Rianne de Heide, Aaditya Ramdas, Jelle Goeman" }]
+dependencies = [
+  "numpy>=1.22",
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "matplotlib>=3.6",
+  "seaborn>=0.12",
+  "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pybind11>=2.11"]
+
+[tool.setuptools.packages.find]
+where = ["python/src"]
