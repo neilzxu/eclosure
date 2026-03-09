@@ -1,0 +1,36 @@
+site_name: eclosure
+site_url: https://neilzxu.github.io/eclosure/
+repo_url: https://github.com/neilzxu/eclosure
+repo_name: neilzxu/eclosure
+theme:
+  name: material
+nav:
+  - Overview: index.md
+  - API: api.md
+  - Scripts: scripts.md
+  - Tests: tests.md
+  - Advanced Modules: advanced.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - python/src
+          options:
+            docstring_style: google
+            heading_level: 2
+            inherited_members: false
+            members_order: source
+            separate_signature: true
+            show_root_full_path: false
+            show_root_heading: true
+            show_root_members_full_path: false
+            show_source: false
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true

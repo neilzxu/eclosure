@@ -2,8 +2,6 @@ rm(list = ls())
 
 alpha_levels <- c(0.05, 0.1)
 
-source("closedBY.R")
-
 suppressPackageStartupMessages({
   library(cherry)
   library(fdrtool)
@@ -69,7 +67,10 @@ load_vandevijver <- local({
   function() {
     if (is.null(cache)) {
       data_env <- new.env()
-      load("r/eclosure/inst/extdata/pvalues_tutorial.RData", envir = data_env)
+      load(
+        system.file("extdata", "pvalues_tutorial.RData", package = "eClosure"),
+        envir = data_env
+      )
       cache <<- as.numeric(data_env$ps)
     }
     cache
@@ -136,8 +137,8 @@ compute_method_counts <- function(pvalues, alpha) {
     BH = sum(p.adjust(pvalues, method = "BH") <= alpha),
     BY = sum(p.adjust(pvalues, method = "BY") <= alpha),
     #cBY_old = closedBY_old(pvalues, alpha),
-    cBY = closedBY(pvalues, alpha),
-    closed_eBH_cal = closed_eBH_cal(pvalues, alpha)
+    cBY = eClosure::closedBY(pvalues, alpha),
+    closed_eBH_cal = eClosure::closed_eBH_cal(pvalues, alpha)
   )
 }
 

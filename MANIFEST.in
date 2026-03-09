@@ -1,4 +1,6 @@
-graft cpp
+include README-pypi.md
+include mkdocs.yml
+graft docs
 graft python/src/eclosure/data
 graft r/eclosure/inst/extdata
 global-exclude *.pyc __pycache__

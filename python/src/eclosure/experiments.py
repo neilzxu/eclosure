@@ -1,3 +1,5 @@
+"""Simulation, plotting, and real-data helpers for the eclosure paper."""
+
 from typing import Any, Optional, Dict, List
 
 from itertools import product, combinations
@@ -6,16 +8,18 @@ import os
 import argparse
 from pathlib import Path
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
 import numpy as np
-import pandas as pd
-import scipy
-import seaborn as sns
-from tqdm import tqdm
+try:
+    import pandas as pd
+    import scipy
+    from tqdm import tqdm
+except ImportError as exc:  # pragma: no cover - exercised by optional installs
+    raise ImportError(
+        "eclosure.experiments requires optional experiment dependencies. "
+        "Install them with `pip install eclosure[experiments]`."
+    ) from exc
 
-from .core import ClosedeBHError, closede_bh_discoveries
+from .core import closedBY, closedeBH
 from .resources import data_dir as package_data_dir
 
 # Parameters
@@ -26,6 +30,20 @@ signal_strengths = [0.25, 0.5, 1, 2]
 #signal_strengths = [5, 6, 7]
 n_trials = 100
 n_cores = 8
+
+
+def _require_plotting():
+    try:
+        import matplotlib as mpl
+        import matplotlib.pyplot as plt
+        from matplotlib.gridspec import GridSpec
+        import seaborn as sns
+    except ImportError as exc:  # pragma: no cover - exercised by optional installs
+        raise ImportError(
+            "Plotting helpers in eclosure.experiments require optional plotting dependencies. "
+            "Install them with `pip install eclosure[plotting]`."
+        ) from exc
+    return mpl, plt, GridSpec, sns
 
 
 def kwarg_zip(map: Dict[str, List[Any]]) -> List[Dict[str, Any]]:
@@ -379,79 +397,25 @@ def compute_cbh(P, alpha, mode='brute'):
 
 
 def compute_cebh_discovery_set(E, alpha, mode='simple'):
-    K = len(E)
-    R_ebh = compute_ebh(E, alpha)
-    ebh_k = len(R_ebh)
-
-    sorted_idx = np.argsort(E)[::-1]  # sorted largest to smallest
-    E_sorted = E[sorted_idx]
- 
-    E_prefix_sum = np.cumsum(E_sorted)
-    E_suffix_sum = np.cumsum(E_sorted[::-1])
-
-    res_dict = {}
-
-    def get_r_of_k(r, k):
-        if (r, k) not in res_dict:
-            res_dict[(r, k)] = np.sum(E_sorted[(k - r):k])
-        return res_dict[(r, k)]
-
-    def get_evalue_fdp(k, r, m):
-        """K is number of discoveries, r is number of false discoveries, m is
-        number of nulls."""
-        rejected_sum = get_r_of_k(r, k)
-        nonreject_sum = get_r_of_k(m - r, K)
-        evalue = (rejected_sum + nonreject_sum) / m
-        fdp = r / k
-        # print(f'k={k}, r={r}, m={m}, rejected_sum={rejected_sum}, nonreject_sum={nonreject_sum}, evalue={evalue}, fdp={fdp}')
-        return evalue, fdp
-
-    def check_e_safety(k, r, m):
-        evalue, fdp = get_evalue_fdp(k, r, m)
-        return fdp <= alpha * evalue or np.isclose(fdp, alpha * evalue)
-
-    for k in range(K, ebh_k, -1):
-        valid = True
-        for r in range(1, k + 1):  # of false discoveries
-            for m_delta in range(0, K - k + 1):  # total non-null count
-                if not check_e_safety(k, r, r + m_delta):
-                    valid = False
-                    break
-            if not valid:
-                break
-        if valid:
-            return set(sorted_idx[:k])
-    return R_ebh
+    _ = mode  # kept for backward-compatible call signatures
+    arr = np.asarray(E, dtype=float)
+    k = int(closedeBH(arr, alpha=alpha))
+    if k <= 0:
+        return set()
+    sorted_idx = np.argsort(arr)[::-1]
+    return set(map(int, sorted_idx[:k]))
 
 def compute_fast_cby(P, alpha):
     E = BY_calibrator(P, alpha, len(P))
     return compute_cebh_discovery_set(E, alpha)
 
 def compute_cby(P, alpha):
-    K = len(P)
-    
-    sorted_idx = np.argsort(P)  # sorted smallest to largest
-    P_sorted = P[sorted_idx]
-    
-    for k in range(K, 0, -1):
-        valid = True
-        for s in range(1, K + 1):  # of nulls
-            E = BY_calibrator(P_sorted, alpha, s)
-            E_sum = np.cumsum(np.append(0, E))
-            for ir in range(max(1, s - (K - k)), min(s, k) + 1):  # total false discovery count
-                nr = s - ir
-                local_evalue = (E_sum[k] - E_sum[k - ir] + E_sum[K] - E_sum[K - nr]) / s
-                fdp = ir / k
-                if local_evalue < fdp / alpha - 1e-7:
-                    #print(f'k: {k}, s: {s}, ir: {ir}, nr: {nr}, local_evalue: {local_evalue}, fdp: {fdp}, E: {E}')
-            
-                    valid = False
-                    break 
-            if not valid:
-                break
-        if valid:
-            return set(sorted_idx[:k])
-    return set()
+    arr = np.asarray(P, dtype=float)
+    k = int(closedBY(arr, alpha=alpha))
+    if k <= 0:
+        return set()
+    sorted_idx = np.argsort(arr)
+    return set(map(int, sorted_idx[:k]))
 
 
         
@@ -524,12 +488,17 @@ def method_cebh(E, alpha, mode):
 
 
 def method_cebh_pkg(E, alpha, approximate=False):
+    arr = np.asarray(E, dtype=float)
     try:
-        return closede_bh_discoveries(E, alpha=alpha, approximate=approximate)
-    except ClosedeBHError as exc:
+        k = int(closedeBH(arr, alpha=alpha, approximate=approximate))
+    except RuntimeError as exc:
         raise RuntimeError(
-            "Closed eBH (R) wrapper failed; ensure Rscript and the Rcpp toolchain are available."
+            "Closed eBH backend failed."
         ) from exc
+    if k <= 0:
+        return set()
+    sorted_idx = np.argsort(arr)[::-1]
+    return set(map(int, sorted_idx[:k]))
 
 
 def method_ebh(E, alpha):
@@ -660,6 +629,7 @@ def run_simulation(method_ids=None, param_grid=None):
 
 
 def plot_results_BY(results, save_path=None):
+    _, plt, _, sns = _require_plotting()
     df = pd.DataFrame(results)
     sns.set(style="whitegrid")
     figs = []
@@ -710,6 +680,7 @@ def plot_results_BY(results, save_path=None):
 
     return figs
 def plot_results_BY_fast(results, save_path=None):
+    _, plt, _, sns = _require_plotting()
     df = pd.DataFrame(results)
     sns.set(style="whitegrid")
     figs = []
@@ -774,6 +745,7 @@ def plot_grid(mus,
               save_path,
               center_val=0,
               cmap="coolwarm"):
+    mpl, plt, GridSpec, sns = _require_plotting()
 
     for mu in mus:
         fig = plt.figure(figsize=(20, 12))
@@ -894,6 +866,7 @@ def plot_results_BH(df: pd.DataFrame, save_path: str = "plots"):
 
 
 def plot_results(results, save_path=None):
+    _, plt, _, sns = _require_plotting()
     df = pd.DataFrame(results)
     sns.set(style="whitegrid")
     figs = []
@@ -1412,6 +1385,7 @@ def _run_real_mode(alpha_val: float,
 
 
 def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    """Parse CLI arguments for the packaged experiments entrypoint."""
     parser = argparse.ArgumentParser(description="Experiments: simulation mode or real-data mode")
     parser.add_argument("--mode",
                         choices=["simulation", "sim", "real", "real-data"],
@@ -1434,6 +1408,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    """Run the experiments CLI in simulation mode or real-data mode."""
     args = parse_args(argv)
 
     # Update globals used by existing code paths

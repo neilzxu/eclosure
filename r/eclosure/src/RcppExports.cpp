@@ -10,23 +10,117 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// closedeBH_cpp
-int closedeBH_cpp(NumericVector e, double alpha, Nullable<IntegerVector> set, bool approximate);
-RcppExport SEXP _eClosure_closedeBH_cpp(SEXP eSEXP, SEXP alphaSEXP, SEXP setSEXP, SEXP approximateSEXP) {
+// BY_cpp
+int BY_cpp(NumericVector p, NumericVector harmonic, double alpha);
+RcppExport SEXP _eClosure_BY_cpp(SEXP pSEXP, SEXP harmonicSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type harmonic(harmonicSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(BY_cpp(p, harmonic, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cBY_check_cpp
+List cBY_check_cpp(NumericVector p, int r, NumericVector harmonic, int warm_s, double alpha);
+RcppExport SEXP _eClosure_cBY_check_cpp(SEXP pSEXP, SEXP rSEXP, SEXP harmonicSEXP, SEXP warm_sSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type r(rSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type harmonic(harmonicSEXP);
+    Rcpp::traits::input_parameter< int >::type warm_s(warm_sSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(cBY_check_cpp(p, r, harmonic, warm_s, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// largestcBYsignificant_cpp
+int largestcBYsignificant_cpp(NumericVector p, double alpha);
+RcppExport SEXP _eClosure_largestcBYsignificant_cpp(SEXP pSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(largestcBYsignificant_cpp(p, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// largestcBYsignificant_approximate_cpp
+int largestcBYsignificant_approximate_cpp(NumericVector p, double alpha);
+RcppExport SEXP _eClosure_largestcBYsignificant_approximate_cpp(SEXP pSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(largestcBYsignificant_approximate_cpp(p, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// largestmeanconsistent_cpp
+int largestmeanconsistent_cpp(NumericVector e, double alpha);
+RcppExport SEXP _eClosure_largestmeanconsistent_cpp(SEXP eSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type e(eSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Nullable<IntegerVector> >::type set(setSEXP);
-    Rcpp::traits::input_parameter< bool >::type approximate(approximateSEXP);
-    rcpp_result_gen = Rcpp::wrap(closedeBH_cpp(e, alpha, set, approximate));
+    rcpp_result_gen = Rcpp::wrap(largestmeanconsistent_cpp(e, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// eBH_cpp
+int eBH_cpp(NumericVector e, double alpha);
+RcppExport SEXP _eClosure_eBH_cpp(SEXP eSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type e(eSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(eBH_cpp(e, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// largestmeanconsistent_approximate_cpp
+int largestmeanconsistent_approximate_cpp(NumericVector e, double alpha);
+RcppExport SEXP _eClosure_largestmeanconsistent_approximate_cpp(SEXP eSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type e(eSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(largestmeanconsistent_approximate_cpp(e, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// meanconsistent_wrapper_cpp
+bool meanconsistent_wrapper_cpp(NumericVector cum_e, int r, double alpha);
+RcppExport SEXP _eClosure_meanconsistent_wrapper_cpp(SEXP cum_eSEXP, SEXP rSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type cum_e(cum_eSEXP);
+    Rcpp::traits::input_parameter< int >::type r(rSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(meanconsistent_wrapper_cpp(cum_e, r, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_eClosure_closedeBH_cpp", (DL_FUNC) &_eClosure_closedeBH_cpp, 4},
+    {"_eClosure_BY_cpp", (DL_FUNC) &_eClosure_BY_cpp, 3},
+    {"_eClosure_cBY_check_cpp", (DL_FUNC) &_eClosure_cBY_check_cpp, 5},
+    {"_eClosure_largestcBYsignificant_cpp", (DL_FUNC) &_eClosure_largestcBYsignificant_cpp, 2},
+    {"_eClosure_largestcBYsignificant_approximate_cpp", (DL_FUNC) &_eClosure_largestcBYsignificant_approximate_cpp, 2},
+    {"_eClosure_largestmeanconsistent_cpp", (DL_FUNC) &_eClosure_largestmeanconsistent_cpp, 2},
+    {"_eClosure_eBH_cpp", (DL_FUNC) &_eClosure_eBH_cpp, 2},
+    {"_eClosure_largestmeanconsistent_approximate_cpp", (DL_FUNC) &_eClosure_largestmeanconsistent_approximate_cpp, 2},
+    {"_eClosure_meanconsistent_wrapper_cpp", (DL_FUNC) &_eClosure_meanconsistent_wrapper_cpp, 3},
     {NULL, NULL, 0}
 };
 

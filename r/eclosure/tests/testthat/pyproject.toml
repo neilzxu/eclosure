@@ -14,15 +14,33 @@ authors = [
 license = "GPL-3.0-only"
 dependencies = [
   "numpy>=1.22",
-  "pandas>=1.5",
-  "scipy>=1.9",
-  "matplotlib>=3.6",
-  "seaborn>=0.12",
-  "tqdm>=4.65"
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "pybind11>=2.11"]
+experiments = [
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "tqdm>=4.65"
+]
+plotting = [
+  "matplotlib>=3.6",
+  "seaborn>=0.12"
+]
+test = [
+  "pytest>=7.0",
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "tqdm>=4.65"
+]
+dev = [
+  "pybind11>=2.11",
+  "pytest>=7.0",
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "tqdm>=4.65",
+  "matplotlib>=3.6",
+  "seaborn>=0.12"
+]
 
 [tool.setuptools.packages.find]
 where = ["python/src"]

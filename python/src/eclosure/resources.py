@@ -1,3 +1,5 @@
+"""Helpers for locating packaged data and the repository root."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,6 +17,7 @@ def _repo_root() -> Path:
 
 
 def data_dir(kind: Literal["evalues", "pvalues"]) -> Path:
+  """Return the installed or in-repo directory for packaged example data."""
   local = _THIS_DIR / "data" / kind
   if local.exists():
     return local
@@ -25,4 +28,5 @@ def data_dir(kind: Literal["evalues", "pvalues"]) -> Path:
 
 
 def repo_root() -> Path:
+  """Return the inferred repository root for the current installation."""
   return _repo_root()

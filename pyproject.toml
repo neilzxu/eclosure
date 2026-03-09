@@ -6,21 +6,55 @@ build-backend = "setuptools.build_meta"
 name = "eclosure"
 version = "0.1.0"
 description = "Python bindings and utilities for e-Closure based multiple testing procedures"
-readme = "README.md"
+readme = "README-pypi.md"
 requires-python = ">=3.9"
-license = { text = "GPL-3.0-only" }
-authors = [{ name = "Ziyu Xu, Aldo Solari, Lasse Fischer, Rianne de Heide, Aaditya Ramdas, Jelle Goeman" }]
+license = "GPL-3.0-only"
+authors = [{ name = "Ziyu Xu, Jelle Goeman" }]
 dependencies = [
   "numpy>=1.22",
-  "pandas>=1.5",
-  "scipy>=1.9",
-  "matplotlib>=3.6",
-  "seaborn>=0.12",
-  "tqdm>=4.65",
 ]
 
+[project.urls]
+Homepage = "https://github.com/neilzxu/eclosure"
+Documentation = "https://neilzxu.github.io/eclosure/"
+Repository = "https://github.com/neilzxu/eclosure"
+Issues = "https://github.com/neilzxu/eclosure/issues"
+
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "pybind11>=2.11"]
+experiments = [
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "tqdm>=4.65",
+]
+docs = [
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.6",
+  "mkdocstrings[python]>=0.30",
+]
+plotting = [
+  "matplotlib>=3.6",
+  "seaborn>=0.12",
+]
+test = [
+  "pytest>=7.0",
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "tqdm>=4.65",
+]
+dev = [
+  "pybind11>=2.11",
+  "build>=1.2",
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.6",
+  "mkdocstrings[python]>=0.30",
+  "pytest>=7.0",
+  "pandas>=1.5",
+  "scipy>=1.9",
+  "tqdm>=4.65",
+  "matplotlib>=3.6",
+  "seaborn>=0.12",
+  "twine>=6.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["python/src"]

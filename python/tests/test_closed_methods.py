@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
-import pandas as pd
+import pytest
 
-from eclosure import closede_bh_discoveries
+pd = pytest.importorskip("pandas")
+pytest.importorskip("scipy")
+pytest.importorskip("tqdm")
+
+from eclosure import closedeBH
 from eclosure.experiments import (compute_by, compute_cby,
                                   compute_cebh_discovery_set, compute_ebh,
                                   simulate_statistics)
@@ -26,6 +28,16 @@ def _load_pvalue_arrays() -> list[np.ndarray]:
   return arrays
 
 
+def _cebh_discoveries(evalues: np.ndarray | list[float],
+                      alpha: float) -> set[int]:
+  arr = np.asarray(evalues, dtype=float)
+  k = int(closedeBH(arr, alpha=alpha))
+  if k <= 0:
+    return set()
+  sorted_idx = np.argsort(arr)[::-1]
+  return set(map(int, sorted_idx[:k]))
+
+
 def test_closed_ebh_python_and_cpp_agree_on_simulations():
   np.random.seed(2024)
   configs = [(25, 0.5, 1.5), (40, 0.6, 2.0)]
@@ -34,7 +46,7 @@ def test_closed_ebh_python_and_cpp_agree_on_simulations():
                                      null_prop=pi0,
                                      signal_strength=mu,
                                      mode='simple')
-    cpp = closede_bh_discoveries(evalues, alpha=0.1)
+    cpp = _cebh_discoveries(evalues, alpha=0.1)
     py = compute_cebh_discovery_set(evalues, alpha=0.1, mode='simple')
     ebh = compute_ebh(evalues, alpha=0.1)
 
@@ -48,7 +60,7 @@ def test_closed_ebh_superset_on_simulations():
                                    null_prop=0.6,
                                    signal_strength=1.5,
                                    mode='simple')
-  closed = closede_bh_discoveries(evalues, alpha=0.1)
+  closed = _cebh_discoveries(evalues, alpha=0.1)
   ebh = compute_ebh(evalues, alpha=0.1)
   assert ebh.issubset(closed)
 
@@ -59,7 +71,7 @@ def test_closed_ebh_superset_on_real_data():
   for alpha in (0.05, 0.1):
     for df in datasets:
       evalues = df["evalue"].dropna().to_numpy()
-      closed = closede_bh_discoveries(evalues, alpha=alpha)
+      closed = _cebh_discoveries(evalues, alpha=alpha)
       ebh = compute_ebh(evalues, alpha=alpha)
       assert ebh.issubset(
           closed), f"Closed eBH failed superset check at alpha={alpha}"
@@ -71,7 +83,7 @@ def test_closed_ebh_python_and_cpp_agree_on_real_data():
   for alpha in (0.05, 0.1):
     for df in datasets:
       evalues = df["evalue"].dropna().to_numpy()
-      cpp = closede_bh_discoveries(evalues, alpha=alpha)
+      cpp = _cebh_discoveries(evalues, alpha=alpha)
       py = compute_cebh_discovery_set(evalues, alpha=alpha, mode='simple')
       ebh = compute_ebh(evalues, alpha=alpha)
 
