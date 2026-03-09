@@ -36,14 +36,22 @@ significant = eclosure.closedBY([0.01, 0.5], subset=[0], alpha=0.05)
 
 ## Documentation map
 
-- [API](api.md): stable Python API reference and packaged data helpers.
+- [API](api.md): stable Python API reference for the closed testing procedures.
 - [Scripts](scripts.md): CLI usage for `python -m eclosure.experiments`.
 - [Tests](tests.md): how the Python test suites are organized and run.
-- [Advanced Modules](advanced.md): research-oriented modules included with the
-  repository but not treated as part of the stable surface.
 
 ## Related links
 
 - GitHub repository: <https://github.com/neilzxu/eclosure>
-- Release artifacts: <https://github.com/neilzxu/eclosure/releases>
 - Paper: <https://arxiv.org/abs/2509.02517>
+
+## Citation
+
+```bibtex
+@article{xu2025bringing,
+  title={Bringing Closure to False Discovery Rate Control: A General Principle for Multiple Testing},
+  author={Xu, Ziyu and Solari, Aldo and Fischer, Lasse and de Heide, Rianne and Ramdas, Aaditya and Goeman, Jelle},
+  journal={arXiv preprint arXiv:2509.02517},
+  year={2025}
+}
+```

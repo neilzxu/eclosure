@@ -20,8 +20,7 @@ implementations in `r/eclosure/src/`.
 ## Python package
 
 Package documentation for the Python interface lives at
-<https://neilzxu.github.io/eclosure/>. Tagged release artifacts are published
-at <https://github.com/neilzxu/eclosure/releases>.
+<https://neilzxu.github.io/eclosure/>.
 Repository-only exploratory scripts live under `scripts/` and are not shipped
 in the Python package or wheels.
 

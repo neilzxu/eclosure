@@ -7,7 +7,6 @@ paper.
 
 - Documentation: <https://neilzxu.github.io/eclosure/>
 - Source: <https://github.com/neilzxu/eclosure>
-- Issue tracker: <https://github.com/neilzxu/eclosure/issues>
 - Paper: <https://arxiv.org/abs/2509.02517>
 
 ## Installation
@@ -57,3 +56,14 @@ The full package documentation includes:
 - Notes on repository-only exploratory scripts that are not part of the package
 
 See <https://neilzxu.github.io/eclosure/> for the full docs.
+
+## Citation
+
+```bibtex
+@article{xu2025bringing,
+  title={Bringing Closure to False Discovery Rate Control: A General Principle for Multiple Testing},
+  author={Xu, Ziyu and Solari, Aldo and Fischer, Lasse and de Heide, Rianne and Ramdas, Aaditya and Goeman, Jelle},
+  journal={arXiv preprint arXiv:2509.02517},
+  year={2025}
+}
+```

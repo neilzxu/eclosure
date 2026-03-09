@@ -44,16 +44,3 @@ Useful options:
 
 The real-data workflow writes results under `OUT_DIR/real/` and also prints a
 summary table to stdout.
-
-## Repository shim
-
-The repository root contains `exp.py`, which delegates to
-`eclosure.experiments`. It exists for backward compatibility with older
-in-repo workflows:
-
-```bash
-python exp.py --mode real --alpha 0.1 --out-dir figures
-```
-
-Treat `python -m eclosure.experiments` as the supported interface for installed
-packages and wheels.

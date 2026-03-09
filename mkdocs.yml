@@ -9,7 +9,6 @@ nav:
   - API: api.md
   - Scripts: scripts.md
   - Tests: tests.md
-  - Advanced Modules: advanced.md
 plugins:
   - search
   - mkdocstrings:
