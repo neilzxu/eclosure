@@ -39,6 +39,10 @@ std::vector<double> sanitize_pvalues_cpp(const std::vector<double>& p) {
   return sanitized;
 }
 
+double stable_ceiling_cpp(double x) {
+  return std::max(1.0, std::ceil(x - TOLERANCE));
+}
+
 // ---------------------------------------------------------------------------
 // BY_cpp
 //
@@ -117,16 +121,15 @@ cBYCheckResult cBY_check_cpp(const std::vector<double>& p,   // length m, layout
                    int warm_s,        // warm-start s (0 = no warm start)
                    double alpha) {
 
-  // Edge case: empty set is always non-significant (vacuously passes)
+  // Edge case: the empty set is vacuously significant.
   if (r == 0) return {true, 0};
 
   int m = p.size();
   double invalpha = 1.0 / alpha;
 
-  // e_out[i+1] caches the e-value for the (i+1)-th largest p_out entry
-  // (1-indexed logic from R preserved: e_out has size m-r+1, index 0 unused)
-  // We allocate m-r+1 elements; index 0 is a sentinel (always 0).
-  std::vector<double> e_out(m - r + 1, 0.0);
+  // e_out[i+1] caches the e-value for the (i+1)-th largest p_out entry.
+  // Index 0 is an always-zero sentinel used when v drops to 0.
+  std::vector<double> e_out(m + 1, 0.0);
 
   // ------------------------------------------------------------------
   // Breadth-first bisection queue over s ∈ [1, m]
@@ -181,8 +184,19 @@ cBYCheckResult cBY_check_cpp(const std::vector<double>& p,   // length m, layout
       continue;
     }
 
-    // For s=1 and the sufficient condition failed: automatic violation.
-    if (s == 1) return {false, 1};
+    // For s=1 the shortcut above is only sufficient, not necessary. Check the
+    // singleton condition directly against the largest p-value inside the set.
+    if (s == 1) {
+      double largest_inside_e = 0.0;
+      if (p[m - r] <= alpha + TOLERANCE) {
+        largest_inside_e = invalpha / stable_ceiling_cpp(p[m - r] * invalpha);
+      }
+      if (largest_inside_e + TOLERANCE < invalpha / static_cast<double>(r)) {
+        return {false, 1};
+      }
+      if (hi > s) queue.push_back({s + 1, hi});
+      continue;
+    }
 
     // ------------------------------------------------------------------
     // Compute e_out values for indices v = maxv down to 1.
@@ -202,7 +216,7 @@ cBYCheckResult cBY_check_cpp(const std::vector<double>& p,   // length m, layout
 
     for (int i = maxv - 1; i >= 0; --i) {
       // p_out[i] = p[i] (0-indexed)
-      if (Hs * p[i] - alpha > -TOLERANCE) {
+      if (Hs * p[i] > alpha + TOLERANCE) {
         // p[i] is too large; zero out stale e_out entries
         // (slot index = i+1 in R convention = i+1 in our 1-indexed e_out)
         int j = i; // j is the 0-indexed p_out position, slot = j+1
@@ -212,7 +226,7 @@ cBYCheckResult cBY_check_cpp(const std::vector<double>& p,   // length m, layout
         }
         break;
       }
-      double next_e = invalpha / std::ceil(p[i] * factoralpha);
+      double next_e = invalpha / stable_ceiling_cpp(p[i] * factoralpha);
       e_out[i + 1] = next_e;
       sum_e_out += next_e;
     }
@@ -225,8 +239,8 @@ cBYCheckResult cBY_check_cpp(const std::vector<double>& p,   // length m, layout
     for (int i = minu - 2; i >= 0; --i) {
       // i is 0-indexed offset into p_in; p_in[i] = p[m-r+i]
       double pi = p[m - r + i];
-      if (Hs * pi - alpha > -TOLERANCE) break;
-      sum_e_in += invalpha / std::ceil(pi * factoralpha);
+      if (Hs * pi > alpha + TOLERANCE) break;
+      sum_e_in += invalpha / stable_ceiling_cpp(pi * factoralpha);
     }
 
     // ------------------------------------------------------------------
@@ -238,29 +252,27 @@ cBYCheckResult cBY_check_cpp(const std::vector<double>& p,   // length m, layout
       // p_in[u] in R (1-indexed) = p[m-r + u - 1] in C++ (0-indexed)
       double pu_in = p[m - r + u - 1];
       double next_e_in = 0.0;
-      if (Hs * pu_in - alpha < -TOLERANCE) {
-        // e-value is non-zero only if factor*p < alpha (strictly)
-        next_e_in = invalpha / std::ceil(pu_in * factoralpha);
+      if (Hs * pu_in <= alpha + TOLERANCE) {
+        next_e_in = invalpha / stable_ceiling_cpp(pu_in * factoralpha);
       }
       sum_e_in += next_e_in;
 
       double critical = invalpha * (double)u / (double)r;
 
-      if (sum_e_in - critical > -TOLERANCE) {
+      if (sum_e_in >= critical - TOLERANCE) {
         // Condition met: because p_in is sorted decreasing, later elements
-        // are larger, giving larger e-values, so the condition holds for
+        // are smaller, giving larger e-values, so the condition holds for
         // all remaining u as well.  Break out of u-loop.
         break;
       }
 
       // Condition not yet met from p_in alone; check with p_out contribution
-      if (sum_e_in + sum_e_out - critical < -TOLERANCE) {
+      if (sum_e_in + sum_e_out < critical - TOLERANCE) {
         return {false, s};
       }
 
-      // Remove e_out contribution for slot v+1 (which won't be in S for u+1)
-      // e_out[v+1] stores e-value of p_out[v] (0-indexed); v = s-u, so slot = v+1
-      sum_e_out -= e_out[v + 1];
+      // For the next u, v decreases by one, so drop the current v-th slot.
+      sum_e_out -= e_out[v];
     }
 
     // Recurse into both sub-intervals

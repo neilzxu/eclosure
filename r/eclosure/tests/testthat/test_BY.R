@@ -100,6 +100,18 @@ test_that("duplicate p-values do not cause errors", {
   expect_no_error(closedBY(p_dup, set = 1:3))
 })
 
+test_that("boundary tolerance cases behave consistently", {
+  p_boundary <- c(0.05000000005, 1e-12)
+  expect_equal(closedBY(p_boundary, alpha = 0.05), 2L)
+  expect_true(closedBY(p_boundary, set = 1:2, alpha = 0.05))
+  expect_false(closedBY(p_boundary, set = 1L, alpha = 0.05))
+})
+
+test_that("singleton subsets remain stable with many outside values", {
+  p_small_many <- rep(0.005, 5)
+  expect_true(closedBY(p_small_many, set = 5L, alpha = 0.05))
+})
+
 test_that("set supplied as logical, positive index, and negative index agree", {
   set_logical  <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
   set_posindex <- c(1L, 2L, 3L)

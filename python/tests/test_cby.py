@@ -50,3 +50,15 @@ def test_cby_discovery_result_is_invariant_to_input_order():
   pvalues = rng.uniform(size=30)
   shuffled = rng.permutation(pvalues)
   assert closedBY(pvalues, alpha=0.05) == closedBY(shuffled, alpha=0.05)
+
+
+def test_cby_boundary_tolerance_regression():
+  pvalues = [0.05000000005, 1e-12]
+  assert closedBY(pvalues, alpha=0.05) == 2
+  assert closedBY(pvalues, subset=[0, 1], alpha=0.05) is True
+  assert closedBY(pvalues, subset=[0], alpha=0.05) is False
+
+
+def test_cby_singleton_subset_regression():
+  pvalues = [0.005] * 5
+  assert closedBY(pvalues, subset=[4], alpha=0.05) is True
